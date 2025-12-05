@@ -10,5 +10,5 @@
   tasks:
     - name: Create resource group
       azure.azcollection.azure_rm_resourcegroup:
-        name: "MonResourceGroup"
-        location: "westeurope"
+        name: "RG-Groupe6"
+        location: "francecentral"
