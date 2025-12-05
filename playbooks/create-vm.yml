@@ -29,12 +29,6 @@
         address_prefix: "10.0.1.0/24"
         virtual_network: "vnet-{{ vm_name }}"
 
-    - name: Create public IP
-      azure.azcollection.azure_rm_publicipaddress:
-        resource_group: "{{ resource_group }}"
-        name: "pip-{{ vm_name }}"
-        allocation_method: Static
-
     - name: Create network interface
       azure.azcollection.azure_rm_networkinterface:
         resource_group: "{{ resource_group }}"
@@ -42,6 +36,8 @@
         virtual_network: "vnet-{{ vm_name }}"
         subnet: "subnet-{{ vm_name }}"
         public_ip_name: "pip-{{ vm_name }}"
+        public_ip_allocation_method: Static
+        public_ip_sku: Standard
 
     - name: Create VM
       azure.azcollection.azure_rm_virtualmachine:
