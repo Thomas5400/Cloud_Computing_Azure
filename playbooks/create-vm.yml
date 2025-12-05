@@ -1,0 +1,58 @@
+---
+- name: Create a Linux VM in Azure
+  hosts: localhost
+  connection: local
+  gather_facts: no
+
+  collections:
+    - azure.azcollection
+
+  vars:
+    resource_group: "MonResourceGroup"
+    location: "westeurope"
+    vm_name: "vm-demo"
+    admin_username: "azureuser"
+    admin_password: "Password1234!"
+
+  tasks:
+
+    - name: Create virtual network
+      azure.azcollection.azure_rm_virtualnetwork:
+        resource_group: "{{ resource_group }}"
+        name: "vnet-{{ vm_name }}"
+        address_prefixes: "10.0.0.0/16"
+
+    - name: Create subnet
+      azure.azcollection.azure_rm_subnet:
+        resource_group: "{{ resource_group }}"
+        name: "subnet-{{ vm_name }}"
+        address_prefix: "10.0.1.0/24"
+        virtual_network: "vnet-{{ vm_name }}"
+
+    - name: Create public IP
+      azure.azcollection.azure_rm_publicipaddress:
+        resource_group: "{{ resource_group }}"
+        name: "pip-{{ vm_name }}"
+        allocation_method: Static
+
+    - name: Create network interface
+      azure.azcollection.azure_rm_networkinterface:
+        resource_group: "{{ resource_group }}"
+        name: "nic-{{ vm_name }}"
+        virtual_network: "vnet-{{ vm_name }}"
+        subnet: "subnet-{{ vm_name }}"
+        public_ip_name: "pip-{{ vm_name }}"
+
+    - name: Create VM
+      azure.azcollection.azure_rm_virtualmachine:
+        resource_group: "{{ resource_group }}"
+        name: "{{ vm_name }}"
+        vm_size: "Standard_B1ls"
+        admin_username: "{{ admin_username }}"
+        admin_password: "{{ admin_password }}"
+        network_interfaces: "nic-{{ vm_name }}"
+        image:
+          offer: UbuntuServer
+          publisher: Canonical
+          sku: "20_04-lts"
+          version: latest 
