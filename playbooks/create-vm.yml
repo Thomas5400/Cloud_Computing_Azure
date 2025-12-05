@@ -29,15 +29,22 @@
         address_prefix: "10.0.1.0/24"
         virtual_network: "vnet-{{ vm_name }}"
 
-    - name: Create network interface
+    - name: Create Public IP (Standard SKU)
+      azure.azcollection.azure_rm_publicipaddress:
+        resource_group: "{{ resource_group }}"
+        name: "pip-{{ vm_name }}"
+        allocation_method: Static
+        sku: Standard
+
+    - name: Create network interface with public IP attached
       azure.azcollection.azure_rm_networkinterface:
         resource_group: "{{ resource_group }}"
         name: "nic-{{ vm_name }}"
         virtual_network: "vnet-{{ vm_name }}"
-        subnet: "subnet-{{ vm_name }}"
-        public_ip_name: "pip-{{ vm_name }}"
-        public_ip_allocation_method: Static
-        public_ip_sku: Standard
+        subnet_name: "subnet-{{ vm_name }}"
+        ip_configurations:
+          - name: "ipconfig1"
+            public_ip_address_name: "pip-{{ vm_name }}"
 
     - name: Create VM
       azure.azcollection.azure_rm_virtualmachine:
@@ -51,4 +58,4 @@
           offer: UbuntuServer
           publisher: Canonical
           sku: "20_04-lts"
-          version: latest 
+          version: latest
