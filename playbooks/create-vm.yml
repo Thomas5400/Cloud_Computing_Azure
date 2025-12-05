@@ -60,5 +60,4 @@
           publisher: Canonical
           sku: 16_04-lts-gen2
           version: latest
-        storage_profile:
-          managed_disk_type: Standard_LRS
+        managed_disk_type: Standard_LRS
