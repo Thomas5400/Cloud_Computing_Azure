@@ -8,7 +8,7 @@
     - azure.azcollection
 
   vars:
-    resource_group: "MonResourceGroup"
+    resource_group: "RG-Groupe6"
     location: "francecentral"
     vm_name: "vm-demo"
     admin_username: "azureuser"
