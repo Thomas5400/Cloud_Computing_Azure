@@ -1,0 +1,14 @@
+---
+- name: Create a Resource Group in Azure
+  hosts: localhost
+  connection: local
+  gather_facts: no
+
+  collections:
+    - azure.azcollection
+
+  tasks:
+    - name: Create resource group
+      azure.azcollection.azure_rm_resourcegroup:
+        name: "MonResourceGroup"
+        location: "westeurope"
