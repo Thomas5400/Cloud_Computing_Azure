@@ -46,10 +46,11 @@
           - name: "ipconfig1"
             public_ip_address_name: "pip-{{ vm_name }}"
 
-    - name: Create VM
+    - name: Create Linux VM with Managed Disk
       azure.azcollection.azure_rm_virtualmachine:
         resource_group: "{{ resource_group }}"
         name: "{{ vm_name }}"
+        location: "{{ location }}"
         vm_size: "Standard_B1ls"
         admin_username: "{{ admin_username }}"
         admin_password: "{{ admin_password }}"
@@ -59,5 +60,5 @@
           publisher: Canonical
           sku: 16_04-lts-gen2
           version: latest
-
-
+        storage_profile:
+          managed_disk_type: Standard_LRS
