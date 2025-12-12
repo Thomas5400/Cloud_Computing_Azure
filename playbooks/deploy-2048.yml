@@ -35,15 +35,32 @@
         state: started
         enabled: yes
 
+    - name: Install Python Docker module
+      apt:
+        name: python3-docker
+        state: present
+
     # -------------------------------
-    # PULL DOCKER IMAGE
+    # CLONE 2048 REPOSITORY
     # -------------------------------
-    - name: Pull 2048 Docker image from Docker Hub
+    - name: Clone 2048 git repository
+      git:
+        repo: "https://github.com/agrawpri/2048-docker.git"
+        dest: "/opt/2048"
+        version: master
+      register: git_result
+
+    # -------------------------------
+    # BUILD DOCKER IMAGE
+    # -------------------------------
+    - name: Build 2048 Docker image from repository
       docker_image:
         name: agrawpri/2048
         tag: latest
+        build:
+          path: /opt/2048
         state: present
-        source: pull
+        source: build
       register: docker_pull
 
     # -------------------------------
