@@ -35,21 +35,16 @@
         state: started
         enabled: yes
 
-
-
-
     # -------------------------------
-    # BUILD DOCKER IMAGE
+    # PULL DOCKER IMAGE
     # -------------------------------
-    - name: Build Docker image for 2048
+    - name: Pull 2048 Docker image from Docker Hub
       docker_image:
-        name: game2048
+        name: agrawpri/2048
         tag: latest
-        build:
-          path: /opt/2048
         state: present
-        source: build
-      register: docker_build
+        source: pull
+      register: docker_pull
 
     # -------------------------------
     # STOP AND REMOVE OLD CONTAINER
@@ -72,7 +67,7 @@
     - name: Run 2048 container on port 8080
       docker_container:
         name: game-2048
-        image: game2048:latest
+        image: agrawpri/2048:latest
         state: started
         restart_policy: always
         ports:
