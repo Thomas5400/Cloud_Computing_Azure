@@ -1,0 +1,55 @@
+---
+- name: Cleanup VM and networking resources
+  hosts: localhost
+  connection: local
+  gather_facts: no
+
+  collections:
+    - azure.azcollection
+
+  vars:
+    resource_group: "RG-Groupe6"
+    location: "francecentral"
+    vm_name: "vm-demo"
+    delete_resource_group: false
+
+  tasks:
+
+    - name: Delete virtual machine
+      azure.azcollection.azure_rm_virtualmachine:
+        resource_group: "{{ resource_group }}"
+        name: "{{ vm_name }}"
+        state: absent
+      ignore_errors: yes
+
+    - name: Delete network interface
+      azure.azcollection.azure_rm_networkinterface:
+        resource_group: "{{ resource_group }}"
+        name: "nic-{{ vm_name }}"
+        state: absent
+      ignore_errors: yes
+
+    - name: Delete public IP address
+      azure.azcollection.azure_rm_publicipaddress:
+        resource_group: "{{ resource_group }}"
+        name: "pip-{{ vm_name }}"
+        state: absent
+      ignore_errors: yes
+
+    - name: Delete virtual network
+      azure.azcollection.azure_rm_virtualnetwork:
+        resource_group: "{{ resource_group }}"
+        name: "vnet-{{ vm_name }}"
+        state: absent
+      ignore_errors: yes
+
+    - name: Optionally delete entire resource group
+      azure.azcollection.azure_rm_resourcegroup:
+        name: "{{ resource_group }}"
+        state: absent
+      when: delete_resource_group | bool
+      ignore_errors: yes
+
+    - name: Done cleanup
+      debug:
+        msg: "Cleanup tasks completed (errors ignored for missing resources)."
