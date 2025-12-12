@@ -71,7 +71,7 @@
         name: "nic-{{ vm_name }}"
         virtual_network: "vnet-{{ vm_name }}"
         subnet_name: "subnet-{{ vm_name }}"
-        network_security_group: "nsg-{{ vm_name }}"
+        security_group: "nsg-{{ vm_name }}"
         ip_configurations:
           - name: "ipconfig1"
             public_ip_address_name: "pip-{{ vm_name }}"
