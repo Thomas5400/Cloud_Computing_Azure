@@ -8,8 +8,8 @@
     - azure.azcollection
 
   vars:
-    resource_group: "RG-Groupe6"
-    location: "francecentral"
+    resource_group: "RG-Groupe6v2"
+    location: "polandcentral"
     vm_name: "vm-demo"
     delete_resource_group: false
 
