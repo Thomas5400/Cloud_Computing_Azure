@@ -84,13 +84,13 @@
         resource_group: "{{ resource_group }}"
         name: "{{ vm_name }}"
         location: "{{ location }}"
-        vm_size: "Standard_B1ls"
+        vm_size: "Standard_B2ats_v2"
         admin_username: "{{ admin_username }}"
         admin_password: "{{ admin_password }}"
         network_interfaces: "nic-{{ vm_name }}"
         image:
-          offer: UbuntuServer
+          offer: "ubuntu-24_04-lts"
           publisher: Canonical
-          sku: 16_04-lts-gen2
+          sku: server
           version: latest
         managed_disk_type: Standard_LRS

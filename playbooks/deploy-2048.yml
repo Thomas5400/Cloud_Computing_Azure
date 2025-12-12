@@ -2,7 +2,6 @@
 - name: Deploy 2048 game on Azure VM with Docker
   hosts: all
   become: yes #on fait un sudo pour les taches locales
-  gather_facts: no
   tasks:
 
     # -------------------------------
