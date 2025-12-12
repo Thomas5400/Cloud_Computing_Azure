@@ -40,7 +40,7 @@
     # -------------------------------
     - name: Pull 2048 Docker image from Docker Hub
       docker_image:
-        name: agrawpri/2048
+        name: agrawpri/2048-docker
         tag: latest
         state: present
         source: pull
@@ -67,7 +67,7 @@
     - name: Run 2048 container on port 8080
       docker_container:
         name: game-2048
-        image: agrawpri/2048:latest
+        image: agrawpri/2048-docker:latest
         state: started
         restart_policy: always
         ports:
