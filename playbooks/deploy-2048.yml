@@ -48,7 +48,7 @@
         build:
           path: /opt/2048
         state: present
-        force_source: yes
+        source: build
       register: docker_build
 
     # -------------------------------
