@@ -40,16 +40,11 @@
     # NSG + règle port 8080
     # ---------------------------------------
 
-    - name: Create Network Security Group
+    - name: Create Network Security Group with rules
       azure.azcollection.azure_rm_securitygroup:
         resource_group: "{{ resource_group }}"
         name: "nsg-{{ vm_name }}"
         location: "{{ location }}"
-
-    - name: Add security rule to open port 8080
-      azure.azcollection.azure_rm_securitygroup:
-        resource_group: "{{ resource_group }}"
-        name: "nsg-{{ vm_name }}"
         rules:
           - name: allow_8080
             protocol: Tcp
@@ -59,6 +54,14 @@
             source_address_prefix: "*"
             destination_address_prefix: "*"
             destination_port_range: 8080
+          - name: allow_ssh
+            protocol: Tcp
+            direction: Inbound
+            access: Allow
+            priority: 1000
+            source_address_prefix: "*"
+            destination_address_prefix: "*"
+            destination_port_range: 22
 
 
     # ---------------------------------------
