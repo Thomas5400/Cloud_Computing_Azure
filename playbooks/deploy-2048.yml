@@ -1,6 +1,6 @@
 ---
 - name: Deploy 2048 game on Azure VM with Docker
-  hosts: vm-demo
+  hosts: all
   become: yes
   gather_facts: yes
 
