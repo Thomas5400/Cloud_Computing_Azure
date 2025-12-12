@@ -8,8 +8,8 @@
     - azure.azcollection
 
   vars:
-    resource_group: "RG-Groupe6"
-    location: "francecentral"
+    resource_group: "RG-Groupe6v2"
+    location: "polandcentral"
     vm_name: "vm-demo"
     admin_username: "azureuser"
     admin_password: "Password1234!"
@@ -36,12 +36,41 @@
         allocation_method: Static
         sku: Standard
 
-    - name: Create network interface with public IP attached
+    # ---------------------------------------
+    # NSG + règle port 8080
+    # ---------------------------------------
+
+    - name: Create Network Security Group
+      azure.azcollection.azure_rm_securitygroup:
+        resource_group: "{{ resource_group }}"
+        name: "nsg-{{ vm_name }}"
+        location: "{{ location }}"
+
+    - name: Add security rule to open port 8080
+      azure.azcollection.azure_rm_securitygroup:
+        resource_group: "{{ resource_group }}"
+        name: "nsg-{{ vm_name }}"
+        security_rules:
+          - name: allow_8080
+            protocol: Tcp
+            direction: Inbound
+            access: Allow
+            priority: 1001
+            source_address_prefix: "*"
+            destination_address_prefix: "*"
+            destination_port_range: 8080
+
+    # ---------------------------------------
+    # NIC + association NSG
+    # ---------------------------------------
+
+    - name: Create network interface with public IP + NSG
       azure.azcollection.azure_rm_networkinterface:
         resource_group: "{{ resource_group }}"
         name: "nic-{{ vm_name }}"
         virtual_network: "vnet-{{ vm_name }}"
         subnet_name: "subnet-{{ vm_name }}"
+        network_security_group: "nsg-{{ vm_name }}"
         ip_configurations:
           - name: "ipconfig1"
             public_ip_address_name: "pip-{{ vm_name }}"

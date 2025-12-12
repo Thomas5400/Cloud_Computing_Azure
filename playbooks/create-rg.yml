@@ -11,4 +11,4 @@
     - name: Create resource group
       azure.azcollection.azure_rm_resourcegroup:
         name: "RG-Groupe6"
-        location: "francecentral"
+        location: "polandcentral"
