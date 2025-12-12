@@ -50,7 +50,7 @@
       azure.azcollection.azure_rm_securitygroup:
         resource_group: "{{ resource_group }}"
         name: "nsg-{{ vm_name }}"
-        security_rules:
+        rules:
           - name: allow_8080
             protocol: Tcp
             direction: Inbound
@@ -59,6 +59,7 @@
             source_address_prefix: "*"
             destination_address_prefix: "*"
             destination_port_range: 8080
+
 
     # ---------------------------------------
     # NIC + association NSG
