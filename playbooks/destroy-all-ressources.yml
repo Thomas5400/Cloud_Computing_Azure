@@ -1,0 +1,21 @@
+---
+- name: Cleanup all resources by deleting resource group
+  hosts: localhost
+  connection: local
+  gather_facts: no
+
+  collections:
+    - azure.azcollection
+
+  vars:
+    resource_group: "RG-Groupe6"
+
+  tasks:
+    - name: Delete entire resource group and all resources within it
+      azure.azcollection.azure_rm_resourcegroup:
+        name: "{{ resource_group }}"
+        state: absent
+
+    - name: Done cleanup
+      debug:
+        msg: "Resource group '{{ resource_group }}' and all resources have been deleted."
