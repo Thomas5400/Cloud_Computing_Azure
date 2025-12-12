@@ -1,0 +1,145 @@
+---
+- name: Deploy 2048 game on Azure VM with Docker
+  hosts: vm-demo
+  become: yes
+  gather_facts: yes
+
+  collections:
+    - community.docker
+    - azure.azcollection
+
+  tasks:
+
+    # -------------------------------
+    # UPDATE AND INSTALL PREREQUISITES
+    # -------------------------------
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+        cache_valid_time: 3600
+
+    - name: Install required packages
+      apt:
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - software-properties-common
+          - git
+          - python3-pip
+        state: present
+
+    # -------------------------------
+    # INSTALL DOCKER
+    # -------------------------------
+    - name: Add Docker GPG key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: Add Docker repository
+      apt_repository:
+        repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
+        state: present
+
+    - name: Install Docker CE
+      apt:
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+        state: present
+        update_cache: yes
+
+    - name: Ensure Docker is running
+      service:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Install Python Docker module
+      pip:
+        name: docker
+        state: present
+
+    # -------------------------------
+    # CLONE 2048 GAME
+    # -------------------------------
+    - name: Clone 2048 Git repository
+      git:
+        repo: "https://github.com/gabrielecirulli/2048.git"
+        dest: "/opt/2048"
+        version: master
+      register: git_result
+
+    # -------------------------------
+    # CREATE DOCKERFILE
+    # -------------------------------
+    - name: Create Dockerfile for 2048
+      copy:
+        dest: "/opt/2048/Dockerfile"
+        content: |
+          FROM nginx:alpine
+          COPY . /usr/share/nginx/html
+          EXPOSE 80
+        owner: root
+        group: root
+        mode: '0644'
+
+    # -------------------------------
+    # BUILD DOCKER IMAGE
+    # -------------------------------
+    - name: Build Docker image for 2048
+      docker_image:
+        name: game2048
+        tag: latest
+        build:
+          path: /opt/2048
+        state: present
+        force_source: yes
+      register: docker_build
+
+    # -------------------------------
+    # STOP AND REMOVE OLD CONTAINER
+    # -------------------------------
+    - name: Stop existing 2048 container if it exists
+      docker_container:
+        name: game-2048
+        state: stopped
+      ignore_errors: yes
+
+    - name: Remove existing 2048 container if it exists
+      docker_container:
+        name: game-2048
+        state: absent
+      ignore_errors: yes
+
+    # -------------------------------
+    # RUN NEW CONTAINER ON PORT 8080
+    # -------------------------------
+    - name: Run 2048 container on port 8080
+      docker_container:
+        name: game-2048
+        image: game2048:latest
+        state: started
+        restart_policy: always
+        ports:
+          - "8080:80"
+        env:
+          TZ: "UTC"
+      register: container_result
+
+    # -------------------------------
+    # DISPLAY DEPLOYMENT INFO
+    # -------------------------------
+    - name: Display deployment summary
+      debug:
+        msg: |
+          ========================================
+          2048 Game deployed successfully!
+          ========================================
+          Container Name: game-2048
+          Container Image: game2048:latest
+          Exposed Port: 8080 (internal port 80)
+          Access URL: http://<your-vm-public-ip>:8080
+          ========================================
