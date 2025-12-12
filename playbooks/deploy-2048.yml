@@ -1,12 +1,11 @@
 ---
 - name: Deploy 2048 game on Azure VM with Docker
   hosts: all
-  become: yes
+  become: yes #on fait un sudo pour les taches locales
   gather_facts: yes
 
   collections:
     - community.docker
-    - azure.azcollection
 
   tasks:
 
@@ -26,28 +25,12 @@
           - curl
           - software-properties-common
           - git
-          - python3-pip
-        state: present
-
-    # -------------------------------
-    # INSTALL DOCKER
-    # -------------------------------
-    - name: Add Docker GPG key
-      apt_key:
-        url: https://download.docker.com/linux/ubuntu/gpg
-        state: present
-
-    - name: Add Docker repository
-      apt_repository:
-        repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
         state: present
 
     - name: Install Docker CE
       apt:
         name:
-          - docker-ce
-          - docker-ce-cli
-          - containerd.io
+          - docker.io         
         state: present
         update_cache: yes
 
@@ -57,34 +40,8 @@
         state: started
         enabled: yes
 
-    - name: Install Python Docker module
-      pip:
-        name: docker
-        state: present
 
-    # -------------------------------
-    # CLONE 2048 GAME
-    # -------------------------------
-    - name: Clone 2048 Git repository
-      git:
-        repo: "https://github.com/gabrielecirulli/2048.git"
-        dest: "/opt/2048"
-        version: master
-      register: git_result
 
-    # -------------------------------
-    # CREATE DOCKERFILE
-    # -------------------------------
-    - name: Create Dockerfile for 2048
-      copy:
-        dest: "/opt/2048/Dockerfile"
-        content: |
-          FROM nginx:alpine
-          COPY . /usr/share/nginx/html
-          EXPOSE 80
-        owner: root
-        group: root
-        mode: '0644'
 
     # -------------------------------
     # BUILD DOCKER IMAGE
